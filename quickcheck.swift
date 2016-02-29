@@ -110,7 +110,7 @@ extension Int: Smaller {
 
 extension String: Smaller {
     func smaller() -> String? {
-        return isEmpty ? nil : String(characters.dropFirst())
+        return characters.count == 1 ? nil : String(characters.dropFirst())
     }
 }
 
