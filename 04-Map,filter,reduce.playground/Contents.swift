@@ -24,7 +24,7 @@ func doubleArray1(xs: [Int]) -> [Int] {
 }
 
 
-func computeIntArray(xs: [Int], transform: Int -> Int) -> [Int] {
+func computeIntArray(_ xs: [Int], transform: (Int) -> Int) -> [Int] {
     var result: [Int] = []
     for x in xs {
         result.append(transform(x))
@@ -38,7 +38,7 @@ func doubleArray2(xs: [Int]) -> [Int] {
 }
 
 
-func genericComputeArray1<T>(xs: [Int], transform: Int -> T) -> [T] {
+func genericComputeArray1<T>(xs: [Int], transform: (Int) -> T) -> [T] {
     var result: [T] = []
     for x in xs {
         result.append(transform(x))
@@ -47,7 +47,7 @@ func genericComputeArray1<T>(xs: [Int], transform: Int -> T) -> [T] {
 }
 
 
-func map<Element, T>(xs: [Element], transform: Element -> T) -> [T] {
+func map<Element, T>(_ xs: [Element], transform: (Element) -> T) -> [T] {
     var result: [T] = []
     for x in xs {
         result.append(transform(x))
@@ -56,12 +56,12 @@ func map<Element, T>(xs: [Element], transform: Element -> T) -> [T] {
 }
 
 
-func genericComputeArray2<T>(xs: [Int], transform: Int -> T) -> [T] {
+func genericComputeArray2<T>(xs: [Int], transform: (Int) -> T) -> [T] {
     return map(xs, transform: transform)
 }
 
 
-func genericComputeArray<T>(xs: [Int], transform: Int -> T) -> [T] {
+func genericComputeArray<T>(xs: [Int], transform: (Int) -> T) -> [T] {
     return xs.map(transform)
 }
 
@@ -71,7 +71,7 @@ func genericComputeArray<T>(xs: [Int], transform: Int -> T) -> [T] {
 let exampleFiles = ["README.md", "HelloWorld.swift", "FlappyBird.swift"]
 
 
-func getSwiftFiles(files: [String]) -> [String] {
+func getSwiftFiles(_ files: [String]) -> [String] {
     var result: [String] = []
     for file in files {
         if file.hasSuffix(".swift") {
@@ -91,7 +91,7 @@ func getSwiftFiles2(files: [String]) -> [String] {
 
 //: ## Reduce
 
-func sum(xs: [Int]) -> Int {
+func sum(_ xs: [Int]) -> Int {
     var result: Int = 0
     for x in xs {
         result += x
@@ -136,11 +136,11 @@ func sumUsingReduce(xs: [Int]) -> Int {
 
 
 func productUsingReduce(xs: [Int]) -> Int {
-    return xs.reduce(1, combine: *)
+    return xs.reduce(1, *)
 }
 
 func concatUsingReduce(xs: [String]) -> String {
-    return xs.reduce("", combine: +)
+    return xs.reduce("", +)
 }
 
 
@@ -159,13 +159,13 @@ func flattenUsingReduce<T>(xss: [[T]]) -> [T] {
 
 
 extension Array {
-    func mapUsingReduce<T>(transform: Element -> T) -> [T] {
+    func mapUsingReduce<T>(transform: (Element) -> T) -> [T] {
         return reduce([]) { result, x in
             return result + [transform(x)]
         }
     }
 
-    func filterUsingReduce(includeElement: Element -> Bool) -> [Element] {
+    func filterUsingReduce(includeElement: (Element) -> Bool) -> [Element] {
         return reduce([]) { result, x in
             return includeElement(x) ? result + [x] : result
         }
@@ -218,14 +218,18 @@ func noOpAnyWrong(x: Any) -> Any {
     return 0
 }
 
+precedencegroup CustomPrecedence {
+	associativity: left
+}
 
-infix operator >>> { associativity left }
-func >>> <A, B, C>(f: A -> B, g: B -> C) -> A -> C {
+
+infix operator >>>: CustomPrecedence
+func >>> <A, B, C>(f: @escaping (A) -> B, g: @escaping (B) -> C) -> (A) -> C {
     return { x in g(f(x)) }
 }
 
 
-func curry<A, B, C>(f: (A, B) -> C) -> A -> B -> C {
+func curry<A, B, C>(f: @escaping (A, B) -> C) -> (A) -> (B) -> C {
     return { x in { y in f(x, y) } }
 }
 
