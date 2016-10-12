@@ -33,17 +33,17 @@ var sameClassPoint = classPoint
 sameClassPoint.x = 3
 
 
-func setStructToOrigin(var point: PointStruct) -> PointStruct {
-    point.x = 0
+func setStructToOrigin(_ point: inout PointStruct) -> PointStruct {
+	point.x = 0
     point.y = 0
     return point
 }
 
 
-var structOrigin: PointStruct = setStructToOrigin(structPoint)
+var structOrigin: PointStruct = setStructToOrigin(&structPoint)
 
 
-func setClassToOrigin(point: PointClass) -> PointClass {
+func setClassToOrigin(_ point: PointClass) -> PointClass {
     point.x = 0
     point.y = 0
     return point
@@ -83,10 +83,11 @@ func sum(xs: [Int]) -> Int {
 }
 
 
-func qsort(var array: [Int]) -> [Int] {
-    if array.isEmpty { return [] }
-    let pivot = array.removeAtIndex(0)
+func qsort(_ array: [Int]) -> [Int] {
+	var array = array
+	if array.isEmpty { return [] }
+    let pivot = array.remove(at: 0)
     let lesser = array.filter { $0 < pivot }
     let greater = array.filter { $0 >= pivot }
-    return qsort(lesser) + [pivot] + qsort(greater)
+    return (qsort(lesser) + [pivot]) as [Int] + qsort(greater)
 }
