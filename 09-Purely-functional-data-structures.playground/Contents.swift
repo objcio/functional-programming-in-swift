@@ -9,7 +9,7 @@ func isEmpty<Element>(set: [Element]) -> Bool {
     return set.isEmpty
 }
 
-func contains<Element: Equatable>(x: Element, _ set: [Element]) -> Bool {
+func contains<Element: Equatable>(_ x: Element, _ set: [Element]) -> Bool {
     return set.contains(x)
 }
 
@@ -89,8 +89,8 @@ extension BinarySearchTree where Element: Comparable {
 }
 
 
-extension SequenceType {
-    func all(predicate: Generator.Element -> Bool) -> Bool {
+extension Sequence {
+    func all(predicate: (Iterator.Element) -> Bool) -> Bool {
         for x in self where !predicate(x) {
             return false
         }
@@ -100,7 +100,7 @@ extension SequenceType {
 
 
 extension BinarySearchTree {
-    func contains(x: Element) -> Bool {
+    func contains(_ x: Element) -> Bool {
         switch self {
         case .Leaf:
             return false
@@ -118,7 +118,7 @@ extension BinarySearchTree {
 
 
 extension BinarySearchTree {
-    mutating func insert(x: Element) {
+    mutating func insert(_ x: Element) {
         switch self {
         case .Leaf:
             self = BinarySearchTree(x)
@@ -170,22 +170,21 @@ extension Array {
 }
 
 
-func sum(xs: [Int]) -> Int {
+func sum(_ xs: [Int]) -> Int {
     guard let (head, tail) = xs.decompose else { return 0 }
     return head + sum(tail)
 }
 
 
-func qsort(input: [Int]) -> [Int] {
+func qsort(_ input: [Int]) -> [Int] {
     guard let (pivot, rest) = input.decompose else { return [] }
     let lesser = rest.filter { $0 < pivot }
     let greater = rest.filter { $0 >= pivot }
-    return qsort(lesser) + [pivot] + qsort(greater)
+	return (qsort(lesser) + [pivot]) as [Int] + qsort(greater)
 }
 
-
 extension Trie {
-    func lookup(key: [Element]) -> Bool {
+    func lookup(_ key: [Element]) -> Bool {
         guard let (head, tail) = key.decompose else { return isElement }
         guard let subtrie = children[head] else { return false }
         return subtrie.lookup(tail)
@@ -194,7 +193,7 @@ extension Trie {
 
 
 extension Trie {
-    func withPrefix(prefix: [Element]) -> Trie<Element>? {
+    func withPrefix(_ prefix: [Element]) -> Trie<Element>? {
         guard let (head, tail) = prefix.decompose else { return self }
         guard let remainder = children[head] else { return nil }
         return remainder.withPrefix(tail)
@@ -203,7 +202,7 @@ extension Trie {
 
 
 extension Trie {
-    func autocomplete(key: [Element]) -> [[Element]] {
+    func autocomplete(_ key: [Element]) -> [[Element]] {
         return withPrefix(key)?.elements ?? []
     }
 }
@@ -222,7 +221,7 @@ extension Trie {
 
 
 extension Trie {
-    func insert(key: [Element]) -> Trie<Element> {
+    func insert(_ key: [Element]) -> Trie<Element> {
         guard let (head, tail) = key.decompose else {
             return Trie(isElement: true, children: children)
         }
@@ -239,7 +238,7 @@ extension Trie {
 
 //: ### String Tries
 
-func buildStringTrie(words: [String]) -> Trie<Character> {
+func buildStringTrie(_ words: [String]) -> Trie<Character> {
     let emptyTrie = Trie<Character>()
     return words.reduce(emptyTrie) { trie, word in
         trie.insert(Array(word.characters))
@@ -247,7 +246,7 @@ func buildStringTrie(words: [String]) -> Trie<Character> {
 }
 
 
-func autocompleteString(knownWords: Trie<Character>, word: String) -> [String] {
+func autocompleteString(_ knownWords: Trie<Character>, word: String) -> [String] {
     let chars = Array(word.characters)
     let completed = knownWords.autocomplete(chars)
     return completed.map { chars in
