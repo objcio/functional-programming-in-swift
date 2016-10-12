@@ -64,7 +64,7 @@ extension Ship {
 
 
 extension Position {
-    func minus(p: Position) -> Position {
+    func minus(_ p: Position) -> Position {
         return Position(x: x - p.x, y: y - p.y)
     }
     var length: Double {
@@ -85,10 +85,10 @@ extension Ship {
 
 //: ## First-Class Functions
 
-typealias Region = Position -> Bool
+typealias Region = (Position) -> Bool
 
 
-func circle(radius: Distance) -> Region {
+func circle(_ radius: Distance) -> Region {
     return { point in point.length <= radius }
 }
 
@@ -98,26 +98,26 @@ func circle2(radius: Distance, center: Position) -> Region {
 }
 
 
-func shift(region: Region, offset: Position) -> Region {
+func shift(_ region: @escaping Region, offset: Position) -> Region {
     return { point in region(point.minus(offset)) }
 }
 
 
-func invert(region: Region) -> Region {
+func invert(_ region: @escaping Region) -> Region {
     return { point in !region(point) }
 }
 
 
-func intersection(region1: Region, _ region2: Region) -> Region {
+func intersection(_ region1: @escaping Region, _ region2: @escaping Region) -> Region {
     return { point in region1(point) && region2(point) }
 }
 
-func union(region1: Region, _ region2: Region) -> Region {
+func union(region1: @escaping Region, _ region2: @escaping Region) -> Region {
     return { point in region1(point) || region2(point) }
 }
 
 
-func difference(region: Region, minus: Region) -> Region {
+func difference(_ region: @escaping Region, minus: @escaping Region) -> Region {
     return intersection(region, invert(minus))
 }
 
