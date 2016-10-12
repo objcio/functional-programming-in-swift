@@ -44,12 +44,12 @@ struct Address {
 switch madridPopulation {
     case 0?: print("Nobody in Madrid")
     case (1..<1000)?: print("Less than a million in Madrid")
-    case .Some(let x): print("\(x) people in Madrid")
-    case .None: print("We don't know about Madrid")
+    case .some(let x): print("\(x) people in Madrid")
+    case .none: print("We don't know about Madrid")
 }
 
 
-func populationDescriptionForCity(city: String) -> String? {
+func populationDescriptionForCity(_ city: String) -> String? {
     guard let population = cities[city] else { return nil }
     return "The population of Madrid is \(population * 1000)"
 }
@@ -72,7 +72,7 @@ func incrementOptional2(optional: Int?) -> Int? {
 //: ### Optional Binding Revisited
 
 func addOptionals(optionalX: Int?, optionalY: Int?) -> Int? {
-    guard let x = optionalX, y = optionalY else { return nil }
+    guard let x = optionalX, let y = optionalY else { return nil }
     return x + y
 }
 
@@ -86,7 +86,7 @@ let capitals = [
 
 
 func populationOfCapital(country: String) -> Int? {
-    guard let capital = capitals[country], population = cities[capital]
+    guard let capital = capitals[country], let population = cities[capital]
         else { return nil }
     return population * 1000
 }
