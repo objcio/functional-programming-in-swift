@@ -23,24 +23,24 @@ enum Encoding {
 
 
 extension Encoding {
-    var nsStringEncoding: NSStringEncoding {
+    var nsStringEncoding: String.Encoding {
         switch self {
-            case .ASCII: return NSASCIIStringEncoding
-            case .NEXTSTEP: return NSNEXTSTEPStringEncoding
-            case .JapaneseEUC: return NSJapaneseEUCStringEncoding
-            case .UTF8: return NSUTF8StringEncoding
+            case .ASCII: return String.Encoding.ascii
+            case .NEXTSTEP: return String.Encoding.nextstep
+            case .JapaneseEUC: return String.Encoding.japaneseEUC
+            case .UTF8: return String.Encoding.utf8
         }
     }
 }
 
 
 extension `Encoding` {
-    init?(enc: NSStringEncoding) {
+    init?(enc: String.Encoding) {
         switch enc {
-            case NSASCIIStringEncoding: self = .ASCII
-            case NSNEXTSTEPStringEncoding: self = .NEXTSTEP
-            case NSJapaneseEUCStringEncoding: self = .JapaneseEUC
-            case NSUTF8StringEncoding: self = .UTF8
+            case String.Encoding.ascii: self = .ASCII
+            case String.Encoding.nextstep: self = .NEXTSTEP
+            case String.Encoding.japaneseEUC: self = .JapaneseEUC
+            case String.Encoding.utf8: self = .UTF8
             default: return nil
         }
     }
@@ -48,12 +48,12 @@ extension `Encoding` {
 
 
 func localizedEncodingName(encoding: Encoding) -> String {
-    return .localizedNameOfStringEncoding(encoding.nsStringEncoding)
+    return .localizedName(of: encoding.nsStringEncoding)
 }
 
 //: ## Associated Values
 
-enum LookupError: ErrorType {
+enum LookupError: Error {
     case CapitalNotFound
     case PopulationNotFound
 }
@@ -67,7 +67,7 @@ enum PopulationResult {
 let exampleSuccess: PopulationResult = .Success(1000)
 
 
-func populationOfCapital(country: String) -> PopulationResult {
+func populationOfCapital(_ country: String) -> PopulationResult {
     guard let capital = capitals[country] else {
         return .Error(.CapitalNotFound)
     }
@@ -102,18 +102,18 @@ func mayorOfCapital(country: String) -> String? {
 
 enum MayorResult {
     case Success(Int)
-    case Error(ErrorType)
+    case Error(Error)
 }
 
 
 enum Result<T> {
     case Success(T)
-    case Error(ErrorType)
+    case Error(Error)
 }
 
 //: ## Swift Errors
 
-func populationOfCapital1(country: String) throws -> Int {
+func populationOfCapital1(_ country: String) throws -> Int {
     guard let capital = capitals[country] else {
         throw LookupError.CapitalNotFound
     }
@@ -133,7 +133,7 @@ do {
 
 //: ## Optionals Revisited
 
-func ??<T>(result: Result<T>, handleError: ErrorType -> T) -> T {
+func ??<T>(result: Result<T>, handleError: (Error) -> T) -> T {
     switch result {
         case let .Success(value):
             return value
