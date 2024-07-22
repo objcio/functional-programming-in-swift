@@ -7,7 +7,7 @@ class SheetWindowController: NSWindowController {
 
     override func windowDidLoad()  {
         delegate?.editedRowDelegate = dataSource
-        NotificationCenter.default.addObserver(self, selector: NSSelectorFromString("endEditing:"), name: NSNotification.Name.NSControlTextDidEndEditing, object: nil)
+        NotificationCenter.default.addObserver(self, selector: NSSelectorFromString("endEditing:"), name: NSControl.textDidEndEditingNotification, object: nil)
     }
 
     func endEditing(_ note: Notification) {
@@ -17,7 +17,7 @@ class SheetWindowController: NSWindowController {
 }
 
 
-protocol EditedRow: class {
+protocol EditedRow: AnyObject {
     var editedRow: Int? { get set }
 }
 
@@ -44,7 +44,7 @@ class SpreadsheetDatasource: NSObject, NSTableViewDataSource, EditedRow {
     }
 
     func parseAndEvaluate() {
-        let expressions = formulas.map { Expression.parser.parse($0.characters)?.0 }
+        let expressions = formulas.map { formula in Expression.parser.parse(formula[...])?.0 }
         results = evaluate(expressions: expressions)
     }
 
