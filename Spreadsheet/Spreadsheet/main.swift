@@ -8,4 +8,4 @@
 
 import Cocoa
 
-NSApplicationMain(CommandLine.argc, CommandLine.unsafeArgv)
+_ = NSApplicationMain(CommandLine.argc, CommandLine.unsafeArgv)

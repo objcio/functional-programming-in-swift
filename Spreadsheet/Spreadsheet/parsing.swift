@@ -1,14 +1,13 @@
 import Foundation
 
-
 struct Parser<A> {
-    typealias Stream = String.CharacterView
+    typealias Stream = Substring
     let parse: (Stream) -> (A, Stream)?
 }
 
 extension Parser {
     func run(_ string: String) -> (A, String)? {
-        guard let (result, remainder) = parse(string.characters) else { return nil }
+        guard let (result, remainder) = parse(string[...]) else { return nil }
         return (result, String(remainder))
     }
     
@@ -61,8 +60,6 @@ extension Parser {
     }
 }
 
-
-
 precedencegroup SequencePrecedence {
     associativity: left
     higherThan: AdditionPrecedence
@@ -93,9 +90,7 @@ func <|><A>(lhs: Parser<A>, rhs: Parser<A>) -> Parser<A> {
     return lhs.or(rhs)
 }
 
-
-
-func character(condition: @escaping (Character) -> Bool) -> Parser<Character> {
+func character(matching condition: @escaping (Character) -> Bool) -> Parser<Character> {
     return Parser { input in
         guard let char = input.first, condition(char) else { return nil }
         return (char, input.dropFirst())
@@ -105,7 +100,7 @@ func character(condition: @escaping (Character) -> Bool) -> Parser<Character> {
 func string(_ string: String) -> Parser<String> {
     return Parser<String> { input in
         var remainder = input
-        for c in string.characters {
+        for c in string {
             let parser = character { $0 == c }
             guard let (_, newRemainder) = parser.parse(remainder) else { return nil }
             remainder = newRemainder
@@ -119,9 +114,6 @@ func lazy<A>(_ parser: @autoclosure @escaping () -> Parser<A>) -> Parser<A> {
 }
 
 
-let digit = character { CharacterSet.decimalDigits.contains($0) }
+let digit = character { $0.isNumber }
 let integer = digit.many1.map { Int(String($0))! }
-let capitalLetter = character { CharacterSet.uppercaseLetters.contains($0) }
-
-
-
+let capitalLetter = character { $0.isUppercase }

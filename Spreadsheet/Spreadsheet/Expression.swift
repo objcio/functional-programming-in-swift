@@ -45,7 +45,6 @@ extension Expression {
 }
 
 
-
 enum Result {
     case int(Int)
     case list([Result])
@@ -67,7 +66,7 @@ extension Expression {
         case let .infix(l, op, r):
             return self.evaluateArithmetic(context: context)
                 ?? self.evaluateList(context: context)
-                ?? .error("Invalid operator \(op) for operands \(l, r)")
+                ?? .error("Invalid operator \(op) for operands \(l) and \(r)")
         default:
             return .error("Couldn't evaluate expression \(self)")
         }
@@ -117,7 +116,7 @@ extension Expression {
 func lift(_ op: @escaping (Int, Int) -> Int) -> ((Result, Result) -> Result) {
     return { lhs, rhs in
         guard case let (.int(x), .int(y)) = (lhs, rhs) else {
-            return .error("Invalid operands \(lhs, rhs) for integer operator")
+            return .error("Invalid operands \(lhs) and \(rhs) for integer operator")
         }
         return .int(op(x, y))
     }
@@ -125,9 +124,5 @@ func lift(_ op: @escaping (Int, Int) -> Int) -> ((Result, Result) -> Result) {
 
 
 func evaluate(expressions: [Expression?]) -> [Result] {
-    return expressions.map { $0?.evaluate(context: expressions) ?? .error("Invalid expression \($0)") }
+    return expressions.map { $0?.evaluate(context: expressions) ?? .error("Invalid expression \(String(describing: $0))") }
 }
-
-
-
-
